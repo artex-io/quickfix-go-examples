@@ -32,16 +32,23 @@ import (
 
 //TradeClient implements the quickfix.Application interface
 type TradeClient struct {
+	Settings *quickfix.Settings
 }
 
 //OnCreate implemented as part of Application interface
-func (e TradeClient) OnCreate(sessionID quickfix.SessionID) {}
+func (e TradeClient) OnCreate(sessionID quickfix.SessionID) {
+
+}
 
 //OnLogon implemented as part of Application interface
-func (e TradeClient) OnLogon(sessionID quickfix.SessionID) {}
+func (e TradeClient) OnLogon(sessionID quickfix.SessionID) {
+
+}
 
 //OnLogout implemented as part of Application interface
-func (e TradeClient) OnLogout(sessionID quickfix.SessionID) {}
+func (e TradeClient) OnLogout(sessionID quickfix.SessionID) {
+
+}
 
 //FromAdmin implemented as part of Application interface
 func (e TradeClient) FromAdmin(msg *quickfix.Message, sessionID quickfix.SessionID) (reject quickfix.MessageRejectError) {
@@ -49,7 +56,22 @@ func (e TradeClient) FromAdmin(msg *quickfix.Message, sessionID quickfix.Session
 }
 
 //ToAdmin implemented as part of Application interface
-func (e TradeClient) ToAdmin(msg *quickfix.Message, sessionID quickfix.SessionID) {}
+func (e TradeClient) ToAdmin(msg *quickfix.Message, sessionID quickfix.SessionID) {
+	t, err := msg.MsgType()
+
+	// Logon
+	if err == nil && t == "A" {
+		sets := e.Settings.SessionSettings()
+		if session, ok := sets[sessionID]; ok {
+			if session.HasSetting("Username") {
+				username, err := session.Setting("Username")
+				if err == nil && len(username) > 0 {
+					msg.Header.SetField(553, quickfix.FIXString(username))
+				}
+			}
+		}
+	}
+}
 
 //ToApp implemented as part of Application interface
 func (e TradeClient) ToApp(msg *quickfix.Message, sessionID quickfix.SessionID) (err error) {
@@ -115,7 +137,9 @@ func execute(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("Error reading cfg: %s,", err)
 	}
 
-	app := TradeClient{}
+	app := TradeClient{
+		Settings: appSettings,
+	}
 	fileLogFactory, err := quickfix.NewFileLogFactory(appSettings)
 
 	if err != nil {

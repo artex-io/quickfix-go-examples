@@ -34,19 +34,19 @@ import (
 	fix42nos "github.com/quickfixgo/fix42/newordersingle"
 	fix43nos "github.com/quickfixgo/fix43/newordersingle"
 	fix44nos "github.com/quickfixgo/fix44/newordersingle"
-	fix50nos "github.com/quickfixgo/fix50/newordersingle"
+	fix50nos "github.com/quickfixgo/fix50sp2/newordersingle"
 
 	fix40cxl "github.com/quickfixgo/fix40/ordercancelrequest"
 	fix41cxl "github.com/quickfixgo/fix41/ordercancelrequest"
 	fix42cxl "github.com/quickfixgo/fix42/ordercancelrequest"
 	fix43cxl "github.com/quickfixgo/fix43/ordercancelrequest"
 	fix44cxl "github.com/quickfixgo/fix44/ordercancelrequest"
-	fix50cxl "github.com/quickfixgo/fix50/ordercancelrequest"
+	fix50cxl "github.com/quickfixgo/fix50sp2/ordercancelrequest"
 
 	fix42mdr "github.com/quickfixgo/fix42/marketdatarequest"
 	fix43mdr "github.com/quickfixgo/fix43/marketdatarequest"
 	fix44mdr "github.com/quickfixgo/fix44/marketdatarequest"
-	fix50mdr "github.com/quickfixgo/fix50/marketdatarequest"
+	fix50mdr "github.com/quickfixgo/fix50sp2/marketdatarequest"
 )
 
 func queryString(fieldName string) string {
@@ -430,7 +430,7 @@ func queryOrderCancelRequest44() (msg *quickfix.Message) {
 }
 
 func queryOrderCancelRequest50() (msg *quickfix.Message) {
-	cancel := fix50cxl.New(queryOrigClOrdID(), queryClOrdID(), querySide(), field.NewTransactTime(time.Now()))
+	cancel := fix50cxl.New(queryClOrdID(), querySide(), field.NewTransactTime(time.Now()))
 	cancel.Set(querySymbol())
 	cancel.Set(queryOrderQty())
 	msg = cancel.ToMessage()
